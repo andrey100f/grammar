@@ -1,4 +1,6 @@
 from automate.transition import Transition
+from grammar.production import Production
+from grammar.grammar import Grammar
 
 
 class Automate:
@@ -93,6 +95,13 @@ class Automate:
         transition.set_transition(line)
         self.__transitions.append(transition)
 
+    def __get_transition(self, source_state, symbol):
+        for transition in self.__transitions:
+            if transition.get_source_state() == source_state and transition.get_symbol() == symbol:
+                return transition
+
+        return None
+
     def get_alphabet(self):
         return self.__alphabet
 
@@ -107,3 +116,85 @@ class Automate:
 
     def get_transitions(self):
         return self.__transitions
+
+    def get_next_state(self, source_state, symbol):
+        next_states = []
+
+        for transition in self.__transitions:
+            if transition.get_source_state() == source_state and transition.get_symbol() == symbol:
+                next_states.append(transition.get_next_state())
+
+        return next_states
+
+    def check_sequence(self, sequence):
+        if len(sequence) == 0:
+            return False
+
+        current_state = self.__initial_state
+
+        length = 0
+        for letter in sequence:
+            length += 1
+            transition = self.__get_transition(current_state, letter)
+
+            if transition is None:
+                return False
+
+            current_state = transition.get_next_state()
+
+        if current_state == self.__final_state:
+            return True
+        elif length == len(sequence):
+            return True
+
+        return False
+
+    def convert_to_grammar(self, filename):
+        grammar = Grammar()
+
+        non_terminals = []
+        for non_terminal in self.__states:
+            non_terminals.append(non_terminal)
+
+        start_symbol = self.__initial_state
+        end_symbol = self.__final_state
+
+        terminals = []
+        for terminal in self.__alphabet:
+            terminals.append(terminal)
+
+        productions = []
+        founded_productions = {}
+        for transition in self.__transitions:
+            if transition.get_source_state() != transition.get_next_state():
+                if transition.get_source_state() not in founded_productions.keys():
+                    founded_productions[transition.get_source_state()] = []
+                    founded_productions[transition.get_source_state()].append(transition.get_next_state())
+                elif transition.get_next_state() not in founded_productions[transition.get_source_state()]:
+                    founded_productions[transition.get_source_state()].append(transition.get_next_state())
+
+                if transition.get_source_state() != self.__initial_state:
+                    if transition.get_next_state() not in founded_productions.keys():
+                        founded_productions[transition.get_next_state()] = []
+                        founded_productions[transition.get_next_state()].append(transition.get_symbol())
+                    elif transition.get_symbol() not in founded_productions[transition.get_next_state()]:
+                        founded_productions[transition.get_next_state()].append(transition.get_symbol())
+            else:
+                if transition.get_source_state() not in founded_productions.keys():
+                    founded_productions[transition.get_source_state()] = []
+                    founded_productions[transition.get_source_state()].append(transition.get_source_state() + transition.get_symbol())
+                else:
+                    founded_productions[transition.get_source_state()].append(
+                        transition.get_source_state() + transition.get_symbol())
+
+        for key, value in founded_productions.items():
+            symbol = key
+            list_of_values = " | ".join(value)
+            line = symbol + " -> " + list_of_values
+            production = Production()
+            production.set_production(line)
+            productions.append(production)
+
+        grammar.config_grammar_from_automate(non_terminals,terminals, start_symbol, end_symbol, productions, filename)
+
+        return grammar

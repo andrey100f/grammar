@@ -1,20 +1,63 @@
 from grammar.production import Production
-from automate.automate import Automate
-from automate.transition import Transition
-
 
 class Grammar:
-    def __init__(self, filename):
-        self.__filename = filename
+    def __init__(self):
         self.__non_terminals = []
         self.__terminals = []
         self.__productions = []
         self.__start_symbol = None
         self.__end_symbol = None
 
-        self.__config_grammar(filename)
+    def config_grammar_from_automate(self, non_terminals, terminals, start_symbol, end_symbol, productions, filename):
+        for non_terminal in non_terminals:
+            self.__non_terminals.append(non_terminal)
+        for terminal in terminals:
+            self.__terminals.append(terminal)
+        for production in productions:
+            self.__productions.append(production)
+        self.__start_symbol = start_symbol
+        self.__end_symbol = end_symbol
 
-    def __config_grammar(self, filename):
+        self.__create_config_file(filename)
+
+    def __create_config_file(self, filename):
+        with open(filename, "w") as file:
+            # Scriem terminalele
+            line = ""
+            for letter in self.__terminals:
+                line += letter
+                line += " "
+            line = line.strip()
+            file.write(line)
+            file.write("\n")
+
+            # Scriem non terminalele
+            line = ""
+            for letter in self.__non_terminals:
+                line += letter
+                line += " "
+            line = line.strip()
+            file.write(line)
+            file.write("\n")
+
+            # Scriem starea initiala
+            file.write(self.__start_symbol)
+            file.write("\n")
+
+            # Scriem starea finala
+            file.write(self.__end_symbol)
+            file.write("\n")
+
+            # Scriem productiile
+            line = ""
+            for production in self.__productions:
+                symbol = production.get_symbol()
+                values = " | ".join(production.get_values())
+                line = symbol + " -> " + values
+                file.write(line)
+                file.write("\n")
+
+    def config_grammar_from_file(self, filename):
         with open(filename, "r") as file:
             line_number = 0
             for line in file:
@@ -83,6 +126,9 @@ class Grammar:
         return True
 
     def convert_to_finite_automate(self, filename):
+        from automate.automate import Automate
+        from automate.transition import Transition
+
         automate = Automate()
 
         states = []
