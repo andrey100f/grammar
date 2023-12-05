@@ -1,6 +1,9 @@
+from ui.ui import UI
+
+
 def main():
-    filename_grammar = "grammar/grammar_config.txt"
-    filename_automate = "automate/automate_config.txt"
+    ui = UI()
+    ui.display_menu()
 
 
 if __name__ == '__main__':

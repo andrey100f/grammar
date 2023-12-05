@@ -12,7 +12,6 @@ class Automate:
         self.__final_state = None
 
     def config_automate_from_grammar(self, states, alphabet, transitions, initial_state, final_state, filename):
-        # Configuram automatul
         for letter in alphabet:
             self.__alphabet.append(letter)
         for state in states:
@@ -22,12 +21,10 @@ class Automate:
         self.__initial_state = initial_state
         self.__final_state = final_state
 
-        # Cream fisierul de configurare
         self.__create_config_file(filename)
 
     def __create_config_file(self, filename):
         with open(filename, "w") as file:
-            # Scriem alfabetul
             line = ""
             for letter in self.__alphabet:
                 line += letter
@@ -36,7 +33,6 @@ class Automate:
             file.write(line)
             file.write("\n")
 
-            # Scriem starile
             line = ""
             for state in self.__states:
                 line += state
@@ -45,15 +41,12 @@ class Automate:
             file.write(line)
             file.write("\n")
 
-            # Scriem starea initiala
             file.write(self.__initial_state)
             file.write("\n")
 
-            # Scriem starea finala
             file.write(self.__final_state)
             file.write("\n")
 
-            # Scriem tranzitiile
             for transition in self.__transitions:
                 line = str(transition)
                 file.write(line)
@@ -195,6 +188,16 @@ class Automate:
             production.set_production(line)
             productions.append(production)
 
-        grammar.config_grammar_from_automate(non_terminals,terminals, start_symbol, end_symbol, productions, filename)
+        grammar.config_grammar_from_automate(non_terminals, terminals, start_symbol, end_symbol, productions, filename)
 
         return grammar
+
+    def print_automate(self):
+        print("-------------------------------------------------------------------------------------------------------")
+        print(f"Multimea starilor este: {self.__states}")
+        print(f"Alfabetul este: {self.__alphabet}")
+        print(f"Starea initiala este: {self.__initial_state}")
+        print(f"Starea finala este: {self.__final_state}")
+        print("Multimea tranzitiilor este: ")
+        for transition in self.__transitions:
+            print(transition)

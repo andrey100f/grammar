@@ -1,5 +1,6 @@
 from grammar.production import Production
 
+
 class Grammar:
     def __init__(self):
         self.__non_terminals = []
@@ -22,7 +23,6 @@ class Grammar:
 
     def __create_config_file(self, filename):
         with open(filename, "w") as file:
-            # Scriem terminalele
             line = ""
             for letter in self.__terminals:
                 line += letter
@@ -31,7 +31,6 @@ class Grammar:
             file.write(line)
             file.write("\n")
 
-            # Scriem non terminalele
             line = ""
             for letter in self.__non_terminals:
                 line += letter
@@ -40,16 +39,12 @@ class Grammar:
             file.write(line)
             file.write("\n")
 
-            # Scriem starea initiala
             file.write(self.__start_symbol)
             file.write("\n")
 
-            # Scriem starea finala
             file.write(self.__end_symbol)
             file.write("\n")
 
-            # Scriem productiile
-            line = ""
             for production in self.__productions:
                 symbol = production.get_symbol()
                 values = " | ".join(production.get_values())
@@ -62,7 +57,7 @@ class Grammar:
             line_number = 0
             for line in file:
                 line_number += 1
-                if line_number == 1: # we are at the terminals
+                if line_number == 1:
                     self.add_elements(line, "terminals")
                 elif line_number == 2:
                     self.add_elements(line, "non_terminals")
@@ -112,6 +107,9 @@ class Grammar:
 
     def get_non_terminals(self):
         return self.__non_terminals
+
+    def get_end_symbol(self):
+        return self.__end_symbol
 
     def check_regular(self):
         for production in self.__productions:
@@ -168,3 +166,13 @@ class Grammar:
         automate.config_automate_from_grammar(states, alphabet, transitions, initial_state, final_state, filename)
 
         return automate
+
+    def print_grammar(self):
+        print("-------------------------------------------------------------------------------------------------------")
+        print(f"Multimea non-terminalelor este: {self.__non_terminals}")
+        print(f"Multimea terminalelor este: {self.__terminals}")
+        print(f"Simbolul de start este: {self.__start_symbol}")
+        print(f"Simbolul final este: {self.__end_symbol}")
+        print("Multimea productiilor este: ")
+        for production in self.__productions:
+            print(production)
