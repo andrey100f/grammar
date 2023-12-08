@@ -92,9 +92,12 @@ class GrammarUI:
                     filename = "grammar/result_automate_config.txt"
                     automate = self.__grammar.convert_to_finite_automate(filename)
 
-                    print(f"Fisierul de configurare pentru automatul generat este: {filename}")
-                    print("Automatul generat este: ")
-                    automate.print_automate()
+                    if automate is None:
+                        print("Nu s-a putut configura automatul deoarece granatica nu este regulara!")
+                    else:
+                        print(f"Fisierul de configurare pentru automatul generat este: {filename}")
+                        print("Automatul generat este: ")
+                        automate.print_automate()
             elif choice == "x":
                 break
             else:

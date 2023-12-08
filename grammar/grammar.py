@@ -112,7 +112,19 @@ class Grammar:
         return self.__end_symbol
 
     def check_regular(self):
+        nr_start_symbol = 0
         for production in self.__productions:
+            if production.get_symbol() == self.__start_symbol:
+                nr_start_symbol += 1
+        if nr_start_symbol > 1:
+            return False
+
+        for production in self.__productions:
+            for value in production.get_values():
+                reversed_value = value[::-1]
+                if reversed_value in production.get_values() and len(value) > 1:
+                    return False
+
             if production.get_symbol() not in self.__non_terminals:
                 return False
 
@@ -124,6 +136,9 @@ class Grammar:
         return True
 
     def convert_to_finite_automate(self, filename):
+        if self.check_regular() is False:
+            return None
+
         from automate.automate import Automate
         from automate.transition import Transition
 
